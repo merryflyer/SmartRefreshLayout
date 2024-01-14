@@ -2,6 +2,7 @@ package com.scwang.refreshlayout.fragment.example;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +43,7 @@ import static android.R.layout.simple_list_item_2;
 public class ViewPagerExampleFragment extends Fragment implements OnRefreshListener, OnRefreshLoadMoreListener {
 
     private enum Item {
-        NestedInner(R.string.item_example_pager_left, SmartFragment.class),
-        NestedOuter(R.string.item_example_pager_right, SmartFragment.class),
-        ;
+        NestedInner(R.string.item_example_pager_left, SmartFragment.class);
         public final int nameId;
         public final Class<? extends Fragment> clazz;
         Item(@StringRes int nameId, Class<? extends Fragment> clazz) {
@@ -79,13 +78,13 @@ public class ViewPagerExampleFragment extends Fragment implements OnRefreshListe
 
         mViewPager.setAdapter(mAdapter = new SmartPagerAdapter(this, Item.values()));
 
-        this.mTabLayoutMediator = new TabLayoutMediator(mTabLayout, mViewPager, true, true, new TabLayoutMediator.TabConfigurationStrategy() {
+        /*this.mTabLayoutMediator = new TabLayoutMediator(mTabLayout, mViewPager, true, true, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 tab.setText(getString(Item.values()[position].nameId));
             }
         });
-        this.mTabLayoutMediator.attach();
+        this.mTabLayoutMediator.attach();*/
     }
 
     @Override
@@ -108,11 +107,13 @@ public class ViewPagerExampleFragment extends Fragment implements OnRefreshListe
             super(fragment);
             this.items = items;
             this.fragments = new SmartFragment[items.length];
+            Log.i("seagull", "SmartPagerAdapter 构造函数 items.length = "+ items.length );
         }
 
         @NonNull
         @Override
         public Fragment createFragment(int position) {
+            Log.i("seagull", "SmartPagerAdapter createFragment position = "+ position+"  ,this = "+this.hashCode());
             if (fragments[position] == null) {
                 fragments[position] = new SmartFragment();
             }
@@ -131,6 +132,7 @@ public class ViewPagerExampleFragment extends Fragment implements OnRefreshListe
 
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            Log.i("seagull", "SmartFragment onCreateView "+"  ,this = "+this.hashCode());
             return new RecyclerView(inflater.getContext());
         }
 
@@ -138,13 +140,14 @@ public class ViewPagerExampleFragment extends Fragment implements OnRefreshListe
         public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             RecyclerView recyclerView = (RecyclerView) view;
-
+            Log.i("seagull", "SmartFragment onViewCreated "+"  ,this = "+this.hashCode());
             recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.addItemDecoration(new DividerItemDecoration(view.getContext(),DividerItemDecoration.VERTICAL));
             recyclerView.setAdapter(mAdapter = new BaseRecyclerAdapter<Void>(initData(), simple_list_item_2) {
                 @Override
                 protected void onBindViewHolder(SmartViewHolder holder, Void model, int position) {
+                    Log.i("seagull", "SmartFragment onBindViewHolder position = "+ position+"  ,this = "+this.hashCode());
                     holder.text(android.R.id.text1, getString(R.string.item_example_number_title, position));
                     holder.text(android.R.id.text2, getString(R.string.item_example_number_abstract, position));
                     holder.textColorId(android.R.id.text2, R.color.colorTextAssistant);
